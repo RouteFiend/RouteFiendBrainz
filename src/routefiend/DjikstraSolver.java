@@ -29,13 +29,7 @@ public class DjikstraSolver
 	private final Map<Intersection, Integer> shortestDistances = new HashMap<Intersection, Integer>();
 	private final Map<Intersection, Intersection> predecessors = new HashMap<Intersection, Intersection>();
 	
-	CityMap _map;
-	
-	public DjikstraSolver(CityMap map)
-	{
-		_map = map;
-	}
-	
+
     private void init(Intersection start)
     {
     	visitedNodes.clear();
@@ -57,13 +51,14 @@ public class DjikstraSolver
     	{
     		if(current == end)
     		{
-    			System.out.println("Arrived at end");
     			Intersection ancient = predecessors.get(current);
+    			System.out.print(current.name() + " ");
     			while(ancient != null)
     			{
-    				System.out.print(ancient.name + " ");
+    				System.out.print(ancient.name() + " ");
     				ancient = predecessors.get(ancient);
     			}
+    			System.out.println();
     			break;
     		}
     		
@@ -74,8 +69,7 @@ public class DjikstraSolver
     
     public void computeShortestToNeighbours(Intersection intersect, int hour)
     {
-    	System.out.println("Examine: " + intersect.name);
-    	for(TrafficLoad route : _map.getNeighbours(intersect))
+    	for(TrafficLoad route : TrafficLoad.getNeighbours(intersect))
     	{
     		Intersection neighbour = (route.intersection1() == intersect) ? route.intersection2() : route.intersection1();
     		if(visitedNodes.contains(neighbour))
@@ -84,7 +78,6 @@ public class DjikstraSolver
     		int shortest = getShortestDistance(intersect) + route.load()[hour];
     		if(shortest < getShortestDistance(neighbour))
     		{
-    			System.out.println("New shortest: " + neighbour.name);
     			setShortestDistance(neighbour, shortest);
     			predecessors.put(neighbour, intersect);
     		}
