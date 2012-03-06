@@ -17,7 +17,7 @@ public class DjikstraSolver
 		public int compare(Intersection left, Intersection right)
 		{
 			// note that this trick doesn't work for huge distances, close to Integer.MAX_VALUE
-			int result = shortestDistances.get(left) - shortestDistances.get(right);
+			int result = getShortestDistance(left) - getShortestDistance(right);
 
 			return (result == 0) ? left.compareTo(right) : result;
 		}
@@ -56,7 +56,16 @@ public class DjikstraSolver
     	while((current = unvisitedNodes.poll()) != null)
     	{
     		if(current == end)
+    		{
+    			System.out.println("Arrived at end");
+    			Intersection ancient = predecessors.get(current);
+    			while(ancient != null)
+    			{
+    				System.out.print(ancient.name + " ");
+    				ancient = predecessors.get(ancient);
+    			}
     			break;
+    		}
     		
     		visitedNodes.add(current);
     		computeShortestToNeighbours(current, 9);
@@ -72,17 +81,21 @@ public class DjikstraSolver
     		if(visitedNodes.contains(neighbour))
     			continue;
     		
-    		Integer objInt = shortestDistances.get(intersect);
-    		objInt = (objInt == null) ? INFINITE_DISTANCE : objInt;
-    		objInt += route.load()[hour];
-    		if(objInt < shortestDistances.get(neighbour))
+    		int shortest = getShortestDistance(intersect) + route.load()[hour];
+    		if(shortest < getShortestDistance(neighbour))
     		{
     			System.out.println("New shortest: " + neighbour.name);
-    			setShortestDistance(neighbour, objInt);
+    			setShortestDistance(neighbour, shortest);
     			predecessors.put(neighbour, intersect);
     		}
     			
     	}
+    }
+    
+    public int getShortestDistance(Intersection intersect)
+    {
+        Integer d = shortestDistances.get(intersect);
+        return (d == null) ? INFINITE_DISTANCE : d;
     }
     
     //Rebalance the queue, according to the comparator, when setting new distance

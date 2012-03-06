@@ -54,8 +54,9 @@ public class Intersection implements Comparable<Intersection>
 		_street4 = value;
 	}
 	
-	public Intersection(int street1, int street2, int street3, int street4, String nname)
+	public Intersection(int id, int street1, int street2, int street3, int street4, String nname)
 	{
+		_id = id;
 		_street1 = street1;
 		_street2 = street2;
 		_street3 = street3;
