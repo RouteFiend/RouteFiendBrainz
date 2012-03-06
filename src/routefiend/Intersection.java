@@ -1,12 +1,13 @@
 package routefiend;
 
-public class Intersection
+public class Intersection implements Comparable<Intersection>
 {
 	private int _id;
 	private int _street1;
 	private int _street2;
 	private int _street3;
 	private int _street4;
+	public String name;
 	
 	public int id()
 	{
@@ -52,4 +53,18 @@ public class Intersection
 	{
 		_street4 = value;
 	}
+	
+	public Intersection(int street1, int street2, int street3, int street4, String nname)
+	{
+		_street1 = street1;
+		_street2 = street2;
+		_street3 = street3;
+		_street4 = street4;
+		name = nname;
+	}
+	
+    public int compareTo(Intersection i)
+    {
+        return this.id() - i.id();
+    }
 }
