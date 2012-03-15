@@ -1,5 +1,10 @@
 package routefiend;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 
 public class Intersection implements Comparable<Intersection>
@@ -17,6 +22,43 @@ public class Intersection implements Comparable<Intersection>
 			return null;
 		else
 			return _intersections.get(id);
+	}
+	
+	public static void readIntersectionFrom(String address, String username, String password)
+	{
+		Connection conn = null;
+		Statement statement;
+		ResultSet result;
+		
+		try
+		{
+	        Class.forName("com.mysql.jdbc.Driver").newInstance();
+		    conn = DriverManager.getConnection("jdbc:mysql:" + address + "?" + "user=" + username + "&password=" + password);
+		    statement = conn.createStatement();
+		    result = statement.executeQuery("SELECT * FROM Intersections");
+		    
+			while(result.next())
+			{
+				Intersection intersect = new Intersection(result.getInt("id"));
+				intersect.setLat(result.getDouble("Lat"));
+				intersect.setLon(result.getDouble("Lon"));
+				intersect.setStreet1(Street.getStreetForId(result.getInt("Street1")));
+				intersect.setStreet2(Street.getStreetForId(result.getInt("Street2")));
+				intersect.setStreet3(Street.getStreetForId(result.getInt("Street3")));
+				intersect.setStreet4(Street.getStreetForId(result.getInt("Street4")));
+				intersect.setName(result.getString("Name"));
+				
+				Intersection.addIntersection(intersect);
+			}
+		} catch (SQLException ex) 
+		{
+		    System.out.println("SQLException: " + ex.getMessage());
+		    System.out.println("SQLState: " + ex.getSQLState());
+		    System.out.println("VendorError: " + ex.getErrorCode());
+		} catch (Exception ex)
+		{
+			
+		}
 	}
 	
 	private int _id;

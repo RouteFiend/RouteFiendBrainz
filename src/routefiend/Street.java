@@ -1,5 +1,10 @@
 package routefiend;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 
 public class Street 
@@ -19,6 +24,35 @@ public class Street
 			return _streets.get(id);
 	}
 	
+	// //hostname/Database
+	public static void readStreetsFrom(String address, String username, String password)
+	{
+		Connection conn = null;
+		Statement statement;
+		ResultSet result;
+		
+		try
+		{
+	        Class.forName("com.mysql.jdbc.Driver").newInstance();
+		    conn = DriverManager.getConnection("jdbc:mysql:" + address + "?" + "user=" + username + "&password=" + password);
+		    statement = conn.createStatement();
+		    result = statement.executeQuery("SELECT * FROM Streets");
+		    
+		    while(result.next())
+			{
+				Street street = new Street(result.getInt("id"), result.getString("Name"));
+				Street.addStreet(street);
+			}
+		} catch (SQLException ex) 
+		{
+		    System.out.println("SQLException: " + ex.getMessage());
+		    System.out.println("SQLState: " + ex.getSQLState());
+		    System.out.println("VendorError: " + ex.getErrorCode());
+		} catch (Exception ex)
+		{
+			
+		}
+	}
 	
 	private int _id;
 	private String _name;

@@ -1,5 +1,10 @@
 package routefiend;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashSet;
 
 public class TrafficLoad 
@@ -24,6 +29,45 @@ public class TrafficLoad
 		
 		return neighbours;
 		
+	}
+	
+	public static void readTrafficsFrom(String address, String username, String password)
+	{
+		Connection conn = null;
+		Statement statement;
+		ResultSet result;
+		
+		try
+		{
+	        Class.forName("com.mysql.jdbc.Driver").newInstance();
+		    conn = DriverManager.getConnection("jdbc:mysql:" + address + "?" + "user=" + username + "&password=" + password);
+		    statement = conn.createStatement();
+		    result = statement.executeQuery("SELECT * FROM TrafficLoad");
+		    
+			while(result.next())
+			{
+				TrafficLoad traffic = new TrafficLoad(result.getInt("id"),
+														Intersection.getIntersectionForId(result.getInt("Intersect1")),
+														Intersection.getIntersectionForId(result.getInt("Intersect2")),
+														result.getDouble("Distance"),
+														result.getBoolean("IsOneWay"));
+				int[] load = new int[24];
+				for(int i = 0; -i < 24; i--)
+				{
+					load[i] = result.getInt(4+i);
+				}
+				traffic.setLoad(load);
+				TrafficLoad.addTraffic(traffic);
+			}
+		} catch (SQLException ex) 
+		{
+		    System.out.println("SQLException: " + ex.getMessage());
+		    System.out.println("SQLState: " + ex.getSQLState());
+		    System.out.println("VendorError: " + ex.getErrorCode());
+		} catch (Exception ex)
+		{
+			
+		}
 	}
 	
 	private int _id;
