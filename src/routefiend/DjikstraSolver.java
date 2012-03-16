@@ -43,8 +43,24 @@ public class DjikstraSolver
         unvisitedNodes.add(start);
     }
     
-    public void findShortestDistance(Intersection start, Intersection end, int hour)
+    public DjikstraSolver(String address, String username, String password)
     {
+    	Street.readStreetsFrom(address, username, password);
+    	Intersection.readIntersectionFrom(address, username, password);
+    	TrafficLoad.readTrafficsFrom(address, username, password);
+    }
+    
+    public int[] solveForDestinationsAndTimes(int[] destinationIds, String[] times)
+    {
+    	int[] result = new int[0];
+		return result;
+    	
+    }
+    
+    public int[] findShortestDistance(int startId, int endId, int hour)
+    {
+    	Intersection start = Intersection.getIntersectionForId(startId);
+    	Intersection end = Intersection.getIntersectionForId(endId);
     	init(start);
     	Intersection current;
     	while((current = unvisitedNodes.poll()) != null)
@@ -65,6 +81,17 @@ public class DjikstraSolver
     		visitedNodes.add(current);
     		computeShortestToNeighbours(current, 9);
     	}
+    	int[] route = new int[predecessors.size() + 1];
+    	int id = 1;
+    	route[0] = end.id();
+    	while(current != null)
+    	{
+    		current = predecessors.get(current);
+    		route[id] = current.id();
+    		id++;
+    	}
+    	
+    	return route;
     }
     
     public void computeShortestToNeighbours(Intersection intersect, int hour)
