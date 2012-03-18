@@ -3,9 +3,10 @@
  */
 package routefiend;
 
+/*
 public class RoutingTest 
 {
-    private static final String JAVABRIDGE_PORT="8087";
+    private static final String JAVABRIDGE_PORT="8097";
     private static final php.java.bridge.JavaBridgeRunner runner = php.java.bridge.JavaBridgeRunner.getInstance(JAVABRIDGE_PORT);
     
 	private static DjikstraSolver solver;
@@ -31,3 +32,24 @@ public class RoutingTest
 		return solver.findShortestDistance(startId, endId, hour);
 	}
 }
+//*/
+
+//*
+
+public class RoutingTest 
+{
+	DjikstraSolver solver;
+
+	public RoutingTest()
+	{
+		solver = new DjikstraSolver("//igor.gold.ac.uk/ma001id_RouteFiend", "ma001id", "ext3!fs" );
+		solver.findShortestDistance(1, 7, 9);
+	}
+
+	@SuppressWarnings("unused")
+	public static void main(String[] args) 
+	{
+		RoutingTest test = new RoutingTest();
+	}
+}
+//*/
