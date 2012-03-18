@@ -87,6 +87,8 @@ public class DjikstraSolver
     	while(current != null)
     	{
     		current = predecessors.get(current);
+    		if(current == null)
+    			continue;
     		route[id] = current.id();
     		id++;
     	}

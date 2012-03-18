@@ -37,6 +37,8 @@ public class TrafficLoad
 		Statement statement;
 		ResultSet result;
 		
+		System.out.println("Reading TrafficLoad from " + address + " with user " + username + " and password " + password );
+		
 		try
 		{
 	        Class.forName("com.mysql.jdbc.Driver").newInstance();
@@ -52,7 +54,7 @@ public class TrafficLoad
 														result.getDouble("Distance"),
 														result.getBoolean("IsOneWay"));
 				int[] load = new int[24];
-				for(int i = 0; -i < 24; i--)
+				for(int i = 0; i < 24; i++)
 				{
 					load[i] = result.getInt(4+i);
 				}
@@ -66,7 +68,7 @@ public class TrafficLoad
 		    System.out.println("VendorError: " + ex.getErrorCode());
 		} catch (Exception ex)
 		{
-			
+			System.out.println("Other Exception: " + ex.getMessage());
 		}
 	}
 	

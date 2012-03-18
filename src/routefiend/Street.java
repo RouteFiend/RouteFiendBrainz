@@ -33,6 +33,7 @@ public class Street
 		
 		try
 		{
+			System.out.println("Reading Streets from " + address + " with user " + username + " and password " + password );
 	        Class.forName("com.mysql.jdbc.Driver").newInstance();
 		    conn = DriverManager.getConnection("jdbc:mysql:" + address + "?" + "user=" + username + "&password=" + password);
 		    statement = conn.createStatement();
@@ -50,7 +51,7 @@ public class Street
 		    System.out.println("VendorError: " + ex.getErrorCode());
 		} catch (Exception ex)
 		{
-			
+			System.out.println("Other Exception: " + ex.getMessage());
 		}
 	}
 	
