@@ -5,17 +5,29 @@ package routefiend;
 
 public class RoutingTest 
 {
-	DjikstraSolver solver;
+    private static final String JAVABRIDGE_PORT="8087";
+    private static final php.java.bridge.JavaBridgeRunner runner = php.java.bridge.JavaBridgeRunner.getInstance(JAVABRIDGE_PORT);
+    
+	private static DjikstraSolver solver;
 
-	public RoutingTest()
-	{
-		solver = new DjikstraSolver("//localhost/RouteFiend", "root", "ext3!fs" );
-		solver.findShortestDistance(1, 7, 9);
-	}
-
-	@SuppressWarnings("unused")
 	public static void main(String[] args) 
 	{
-		RoutingTest test = new RoutingTest();
+		try
+		{
+			runner.waitFor();
+		} catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	public static void  init(String address, String username, String password)
+	{
+		solver = new DjikstraSolver(address, username, password);
+	}
+	
+	public static int[] findShortestDistance(int startId, int endId, int hour)
+	{
+		return solver.findShortestDistance(startId, endId, hour);
 	}
 }
