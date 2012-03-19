@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 
+//This class represents entries in the Streets table in the DB.
+//It contains a static container holding all entries (unefficient for huge DBs) and provides some static methods to work on them
 public class Street 
 {
 	private static HashMap<Integer, Street> _streets = new HashMap<Integer, Street>();
@@ -24,7 +26,7 @@ public class Street
 			return _streets.get(id);
 	}
 	
-	// //hostname/Database
+	//Reads all Street entries from the DB
 	public static void readStreetsFrom(String address, String username, String password)
 	{
 		Connection conn = null;

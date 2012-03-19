@@ -5,8 +5,11 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Date;
 import java.util.HashSet;
 
+//This class represents entries in the TrafficLoad table in the DB.
+//It contains a static container holding all entries (unefficient for huge DBs) and provides some static methods to work on them
 public class TrafficLoad 
 {
 	private static HashSet<TrafficLoad> _traffics = new HashSet<TrafficLoad>();
@@ -15,7 +18,9 @@ public class TrafficLoad
 	{
 		_traffics.add(traffic);
 	}
-	
+
+	//Iterates over all TrafficLoad entries, (They also represent direct connections between intersections)
+	//and returns all connections between the searched intersection and it's neighbours
 	public static HashSet<TrafficLoad> getNeighbours(Intersection intersect)
 	{
 		HashSet<TrafficLoad> neighbours = new HashSet<TrafficLoad>();
@@ -31,6 +36,35 @@ public class TrafficLoad
 		
 	}
 	
+	//Returns the TrafficLoad object for any two intersections or null if there is no direct connection between them
+	public static TrafficLoad getLoadForIntersections(Intersection intersect1, Intersection intersect2)
+	{
+		for(TrafficLoad load : _traffics)
+		{
+			if((load.intersection1() == intersect1 && load.intersection2() == intersect2) ||
+					(load.intersection1() == intersect2 && load.intersection2() == intersect1))
+				return load;
+		}
+		
+		return null;
+	}
+	
+	//Iterates over all connections that form a route and returns it's cost for a specified time in a day
+	@SuppressWarnings("deprecation")
+	public static int getCostForRoute(int[] route, Date time)
+	{
+		int cost = 0;
+		for(int i = 0; i < (route.length - 1); i++)
+		{
+			TrafficLoad load = getLoadForIntersections(Intersection.getIntersectionForId(route[i]), 
+														Intersection.getIntersectionForId(route[i + 1]));
+			cost += load.load()[time.getHours()];
+		}
+		
+		return cost;
+	}
+	
+	//Reads all TrafficLoad entries from the DB
 	public static void readTrafficsFrom(String address, String username, String password)
 	{
 		Connection conn = null;
@@ -71,6 +105,8 @@ public class TrafficLoad
 			System.out.println("Other Exception: " + ex.getMessage());
 		}
 	}
+	
+	//WHat follows are accessors and a constructor
 	
 	private int _id;
 	private Intersection _intersection1;

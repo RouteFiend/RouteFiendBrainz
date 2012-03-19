@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 
+//This class represents entries in the Intersections table in the DB.
+//It contains a static container holding all entries (unefficient for huge DBs) and provides some static methods to work on them
 public class Intersection implements Comparable<Intersection>
 {
 	private static HashMap<Integer, Intersection> _intersections = new HashMap<Integer, Intersection>();
@@ -16,6 +18,7 @@ public class Intersection implements Comparable<Intersection>
 		_intersections.put(intersect.id(), intersect);
 	}
 	
+	//Returns the intersection with a given id
 	public static Intersection getIntersectionForId(Integer id)
 	{
 		if(id == null)
@@ -24,6 +27,7 @@ public class Intersection implements Comparable<Intersection>
 			return _intersections.get(id);
 	}
 	
+	//Reads all Intersection entries from the DB
 	public static void readIntersectionFrom(String address, String username, String password)
 	{
 		Connection conn = null;
