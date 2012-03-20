@@ -176,12 +176,16 @@ public class DjikstraSolver
     	Intersection end = Intersection.getIntersectionForId(endId);
     	init(start);
     	Intersection current;
+    	
+    	//Iterate over the unvisited nodes
     	while((current = unvisitedNodes.poll()) != null)
     	{
+    		//If the currently examined node is actually the end node, that we look for print the path so far and break
     		if(current == end)
     		{
     			Intersection ancient = predecessors.get(current);
     			System.out.print(current.name() + " ");
+    			//Iterate over all nodes that lead to this end one
     			while(ancient != null)
     			{
     				System.out.print(ancient.name() + " ");
@@ -191,9 +195,14 @@ public class DjikstraSolver
     			break;
     		}
     		
+    		//Add the currently examined node to the list of visited ones
     		visitedNodes.add(current);
+    		//Find the nearest neighbour
     		computeShortestToNeighbours(current, 9);
     	}
+    	
+    	//Once all the nodes have been visited or the path from start to end is found
+    	//Build the array of nodes forming the path
     	int[] route = new int[predecessors.size() + 1];
     	int id = 1;
     	route[0] = end.id();
@@ -212,13 +221,18 @@ public class DjikstraSolver
     //Consider all neighbours of a given node and find the closest neighbour
     public void computeShortestToNeighbours(Intersection intersect, int hour)
     {
+    	//Iterate over all neighbours
     	for(TrafficLoad route : TrafficLoad.getNeighbours(intersect))
     	{
+    		//the getNeighbours() method returns a list of TrafficLoads representing a connection between the examined node
+    		//and every other directly connected node 
     		Intersection neighbour = (route.intersection1() == intersect) ? route.intersection2() : route.intersection1();
+    		//If the currently examined neighbour had already been examined skip it
     		if(visitedNodes.contains(neighbour))
     			continue;
     		
     		int shortest = getShortestDistance(intersect) + route.load()[hour];
+    		//If the distance to the currently examined neighbour is the shortest so far - record it
     		if(shortest < getShortestDistance(neighbour))
     		{
     			setShortestDistance(neighbour, shortest);
@@ -234,7 +248,10 @@ public class DjikstraSolver
         return (d == null) ? INFINITE_DISTANCE : d;
     }
     
-    //Rebalance the queue, according to the comparator, when setting new distance
+    //When a shortest distance between a node and it's neighbour has been found
+    //store the neighbour for later examination as next node
+    //The removal and reinsertion of the neighbour is needed to rebalance the queue, greatly increasing performance
+    //(The reason we use a balanced queue in the first place
     private void setShortestDistance(Intersection intersect, int distance)
     {
     	unvisitedNodes.remove(intersect);

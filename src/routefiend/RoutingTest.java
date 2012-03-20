@@ -42,7 +42,8 @@ public class RoutingTest
 
 	public RoutingTest()
 	{
-		solver = new DjikstraSolver("//igor.gold.ac.uk/ma001id_RouteFiend", "ma001id", "project_pass" );
+
+		solver = new DjikstraSolver("//igor.gold.ac.uk/ma001id_RouteFiend", "USERNAME", "PASSWORD");
 		solver.findShortestDistance(1, 7, 9);
 	}
 
