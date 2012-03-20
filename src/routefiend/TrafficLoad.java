@@ -56,8 +56,12 @@ public class TrafficLoad
 		int cost = 0;
 		for(int i = 0; i < (route.length - 1); i++)
 		{
+			if(route[i] == 0)
+    			continue;
 			TrafficLoad load = getLoadForIntersections(Intersection.getIntersectionForId(route[i]), 
 														Intersection.getIntersectionForId(route[i + 1]));
+			if(load == null)
+    			continue;
 			cost += load.load()[time.getHours()];
 		}
 		

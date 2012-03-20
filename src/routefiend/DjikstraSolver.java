@@ -72,7 +72,7 @@ public class DjikstraSolver
     //If there is a set of destinations, that are impossible to be reached in a reasonable time, the special value of '-1' is inserted in the array
     //and the unreachable destinations are added after it
     @SuppressWarnings("deprecation")
-	public int[] solveForDestinationsAndTimes(int[] destinationIds, String[] times)
+	public ArrayList<Integer> solveForDestinationsAndTimes(int[] destinationIds, String[] times)
     {
     	ArrayList<Date> objTimes = new ArrayList<Date>();
     	ArrayList<Integer> unreachables = new ArrayList<Integer>();
@@ -81,9 +81,7 @@ public class DjikstraSolver
     	Date last; //The destination time, that has be considered reachable last
     	
     	
-    	int[] result = new int[destinationIds.length + 1];
-    	int resultIndex = 1;
-    	
+    	ArrayList<Integer> result = new ArrayList<Integer>();
     	//Iterate over the times, create objects from them and store them into an array.
     	//Associate each destination with it's expected time
     	for(int i = 0; i < times.length; i++)
@@ -111,57 +109,60 @@ public class DjikstraSolver
     	//Start from the first destination and find the time needed to get to the second
     	//If it's after it's destination time + some reasonable delay interval (e.g. 15 minutes) check the next destination
     	last = objTimes.get(0);
-    	result[0] = destinationIds[resultIndex];
+    	result.add(destinationIds[0]);
     	for(int i = 0; i < (objTimes.size() - 1); i++)
     	{
     		Date time1 = objTimes.get(i);
     		if(last != time1) //Check if the currently selected destination time corresponds to the destination considered reachable last.
-    						  //Otherwise skip
-    			continue;
+    			continue;	  //Otherwise skip
     		
     		//Iterate over the destination that follow the one selected last
-    		for(int j = 1; (i + j) < objTimes.size(); j++)
+    		for(int j = 1; (j + i) < objTimes.size(); j++)
     		{
-	    		Date time2 = objTimes.get(j);
+	    		Date time2 = objTimes.get(j + i);
 	    		Calendar cal1 = Calendar.getInstance();
 	    		Calendar cal2 = Calendar.getInstance();
 	    		int id1 = timedDestinations.get(time1);
 	    		int id2 = timedDestinations.get(time2);
 	    		int[] route = findShortestDistance(id1, id2, time1.getHours());
 	    		int minutes = TrafficLoad.getCostForRoute(route, time1);
+	    		System.out.println("Projected minutes: " + minutes);
 	    		
 	    		cal1.setTime(objTimes.get(i));
-	    		cal2.setTime(objTimes.get(i));
+	    		cal2.setTime(objTimes.get(j + i));
 	    		cal1.add(Calendar.MINUTE, minutes);
 	    		//Check if it's possible to get to the next destination in reasonable time
-	    		if(cal1.after(cal2))
-	    		{
+
+	    		Date date1 = cal1.getTime();
+	    		Date date2 = cal2.getTime();
+	    		System.out.println(date1.toString() + " " + date2.toString());
+	    		
+				Long difference = cal1.getTimeInMillis() - cal2.getTimeInMillis();
+				System.out.println("Difference: " + difference.toString());
 	    			if((cal1.getTimeInMillis() - cal2.getTimeInMillis()) > MAX_LATE)
 	    			{
+		    			System.out.println("Unreachable destination");
 	    				unreachables.add(id2);
 	    				continue;
 	    			}
 		    		else
 		    		{
 		    			last = time2;
-		    			resultIndex++;
-		    			result[resultIndex] = id2;
+		    			for(int k = (route.length - 2); k > 0; k--)
+		    				result.add(route[k]);
+		    			result.add(id2);
 		    			break;
 		    		}
-	    		}
     		}
     	}
     	
     	//If some destinations are considered unreachable add them to the result set
     	if(unreachables.size() > 0)
     	{
-	    	result[resultIndex + 1] = -1;
-	    	resultIndex += 2;
-	    	
-	    	for(Integer id : unreachables)
+	    	result.add(-1);
+	    	for(int id : unreachables)
 	    	{
-	    		result[resultIndex] = id;
-	    		resultIndex++;
+	    		result.add(id);
 	    	}
     	}
 
@@ -174,8 +175,9 @@ public class DjikstraSolver
     {
     	Intersection start = Intersection.getIntersectionForId(startId);
     	Intersection end = Intersection.getIntersectionForId(endId);
-    	init(start);
     	Intersection current;
+    	int pathLength = 0; //The predecessors map contains death end paths and is generally larger than the real path
+    	init(start);
     	
     	//Iterate over the unvisited nodes
     	while((current = unvisitedNodes.poll()) != null)
@@ -185,11 +187,13 @@ public class DjikstraSolver
     		{
     			Intersection ancient = predecessors.get(current);
     			System.out.print(current.name() + " ");
+    			pathLength++;
     			//Iterate over all nodes that lead to this end one
     			while(ancient != null)
     			{
     				System.out.print(ancient.name() + " ");
     				ancient = predecessors.get(ancient);
+    				pathLength++;
     			}
     			System.out.println();
     			break;
@@ -197,22 +201,25 @@ public class DjikstraSolver
     		
     		//Add the currently examined node to the list of visited ones
     		visitedNodes.add(current);
-    		//Find the nearest neighbour
-    		computeShortestToNeighbours(current, 9);
+    		//Find the nearest neighbour. This also inserts it into the unvisited queue
+    		computeShortestToNeighbours(current, hour);
     	}
     	
     	//Once all the nodes have been visited or the path from start to end is found
     	//Build the array of nodes forming the path
-    	int[] route = new int[predecessors.size() + 1];
-    	int id = 1;
+    	int[] route = new int[pathLength];
+//    	Integer length = pathLength;
+//    	System.out.println("Found route with length " + length.toString());
+    	int index = 1;
     	route[0] = end.id();
     	while(current != null)
     	{
     		current = predecessors.get(current);
     		if(current == null)
     			continue;
-    		route[id] = current.id();
-    		id++;
+
+    		route[index] = current.id();
+    		index++;
     	}
     	
     	return route;
