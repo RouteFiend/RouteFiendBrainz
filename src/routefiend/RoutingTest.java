@@ -5,7 +5,7 @@ package routefiend;
 
 import java.util.ArrayList;
 
-/*
+//*
 public class RoutingTest 
 {
     private static final String JAVABRIDGE_PORT="8097";
@@ -29,15 +29,16 @@ public class RoutingTest
 		solver = new DjikstraSolver(address, username, password);
 	}
 	
-	public static int[] findShortestDistance(int startId, int endId, int hour)
+	
+	public static  ArrayList<Integer> solveForDestinationsAndTimes(int[] destinationIds, String[] times)
 	{
-		return solver.findShortestDistance(startId, endId, hour);
+		return solver.solveForDestinationsAndTimes(destinationIds, times);
 	}
 }
 //*/
 
 
-//*
+/*
 public class RoutingTest 
 {
 	DjikstraSolver solver;
@@ -48,7 +49,7 @@ public class RoutingTest
 		solver = new DjikstraSolver("//localhost/RouteFiend", "root", "ext3!fs");
 		//solver.findShortestDistance(1, 33, 9);
 		int[] destinations = {1, 33, 62};
-		String[] times = {"09:00:00", "10:00:00", "08:00:00"};
+		String[] times = {"09:00:00", "10:00:00", "11:00:00"};
 		
 		ArrayList<Integer> solution = solver.solveForDestinationsAndTimes(destinations, times);
 		for(Integer id : solution)

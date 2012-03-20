@@ -132,10 +132,6 @@ public class DjikstraSolver
 	    		cal2.setTime(objTimes.get(j + i));
 	    		cal1.add(Calendar.MINUTE, minutes);
 	    		//Check if it's possible to get to the next destination in reasonable time
-
-	    		Date date1 = cal1.getTime();
-	    		Date date2 = cal2.getTime();
-	    		System.out.println(date1.toString() + " " + date2.toString());
 	    		
 				Long difference = cal1.getTimeInMillis() - cal2.getTimeInMillis();
 				System.out.println("Difference: " + difference.toString());
